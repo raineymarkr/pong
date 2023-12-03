@@ -13,7 +13,7 @@ score = [0,0]
 
 #Game Settings
 ball_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-ball_size = (30,30)
+ball_size = (40,40)
 
 player_paddle_pos = pygame.Vector2(100, screen.get_height() / 2 - 40)
 computer_paddle_pos = pygame.Vector2(screen.get_width() - 140, screen.get_height() / 2 - 40)
@@ -52,12 +52,12 @@ while running:
 
     #Listen for key presses
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
+    if keys[pygame.K_w] or keys[pygame.K_UP]:
         if player_paddle_pos.y > 0:
             player_paddle_pos.y -= 300 * dt
         else:
             player_paddle_pos.y = 0
-    if keys[pygame.K_s]:
+    if keys[pygame.K_s] or keys[pygame.K_DOWN]:
         if player_paddle_pos.y < screen.get_height() - paddle_size[1]:
             player_paddle_pos.y += 300*dt
         else:
