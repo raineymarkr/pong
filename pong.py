@@ -1,4 +1,6 @@
 import pygame
+import time
+import numpy as np
 
 # Initialize Pygame
 pygame.init()
@@ -14,7 +16,8 @@ score = [0,0]
 #Game Settings
 ball_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 ball_size = (40,40)
-
+start_time = None
+delay_trigger = False
 player_paddle_pos = pygame.Vector2(100, screen.get_height() / 2 - 40)
 computer_paddle_pos = pygame.Vector2(screen.get_width() - 140, screen.get_height() / 2 - 40)
 paddle_size = (40,120)
@@ -122,18 +125,36 @@ while running:
 
     #Else the ball moves
     else:
+        print(ball_vel)
+        if ball_vel.y > 15 or ball_vel.y < -15:
+            ball_vel.y = np.sign(ball_vel.y)*15
         ball_pos += ball_vel
+    
     # Computer AI
     if ball_vel.x > 0:  # Move the paddle only if the ball is moving towards it
-        if ball_pos.y + ball_size[1] / 2 > computer_paddle_pos.y + paddle_size[1] / 2:
-            # Ball is below the paddle's center, move paddle down
-            if computer_paddle_pos.y + paddle_size[1] < screen.get_height():
-                computer_paddle_pos.y += 300 * dt
-        elif ball_pos.y + ball_size[1] / 2 < computer_paddle_pos.y + paddle_size[1] / 2:
-            # Ball is above the paddle's center, move paddle up
-            if computer_paddle_pos.y > 0:
-                computer_paddle_pos.y -= 300 * dt
+        if not delay_trigger:
+            delay = np.abs(np.random.normal(1, 0.5))  # Delay in seconds
+            delay_trigger = True
 
+        else:
+            delay = 0
+
+        if start_time is None:
+            start_time = time.time()
+
+        if time.time() - start_time > delay:
+            if ball_pos.y + ball_size[1] / 2 > computer_paddle_pos.y + paddle_size[1] / 2:
+                # Ball is below the paddle's center, move paddle down
+                if computer_paddle_pos.y + paddle_size[1] < screen.get_height():
+                    computer_paddle_pos.y += 300 * dt
+            elif ball_pos.y + ball_size[1] / 2 < computer_paddle_pos.y + paddle_size[1] / 2:
+                # Ball is above the paddle's center, move paddle up
+                if computer_paddle_pos.y > 0:
+                    computer_paddle_pos.y -= 300 * dt
+    else:
+    # Reset the reaction time when the ball is not moving towards the AI paddle
+        start_time = None
+        delay_trigger = False
 
     # Update the screen
     pygame.display.flip()
